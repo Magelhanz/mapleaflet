@@ -1,0 +1,390 @@
+<html lang="ind">
+    <head>
+	<meta name="description" content="UTS Websig UMS">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="author" content="Kelompok D*">
+	<meta name="keyword" content="HTML,Map,Websig,GIS,SIG">
+	<link rel="icon" href="Resmi_Logo_UMS_Color.png" type="images/x-icon">
+
+	<title>Lampung Selatan</title>
+<style>
+	body {
+		margin: 0;
+        height: 96.7%;
+	}
+</style>
+	<!-- Kode penghubung leaflet-->
+	<link rel="stylesheet" href="leaflet/leaflet.css"/>
+	<script src="leaflet/leaflet.js"></script>
+
+	<!--Kode penambahan Kompas-->
+	<link rel="stylesheet" href="leaflet/leaflet-compass.css"/>
+    <script src="leaflet/leaflet-compass.js"></script>
+
+	
+	<!--sisipkan kode pemuatan untuk menghubungkan html dengan minimap-->
+	<link rel="stylesheet" href="leaflet/Control.MiniMap.css"/>
+	<script src="leaflet/Control.MiniMap.js"></script>
+	
+	<!--sisipkan kode pemuatan untuk menghubungkan html dengan leaflet mouse position -->
+	<link rel="stylesheet" href="leaflet/L.Control.MousePosition.css"/>
+	<script src="leaflet/L.Control.MousePosition.js"></script>
+	
+	
+	<!--sisipkan kode pemuatan untuk menghubungkan leaflet dengan groupedlayercontrol -->
+	<link rel="stylesheet" href="leaflet/leaflet.groupedlayercontrol.css"/> 
+	<script src="leaflet/leaflet.groupedlayercontrol.js"></script>
+
+	<!--sisipkan kode measurement-->
+	<link rel="stylesheet" href="leaflet/Leaflet.LinearMeasurement.css"/>
+	<script src="leaflet/Leaflet.LinearMeasurement.js"></script>
+	
+	
+	<!--kode perpindahan marker ke lokasi lain-->
+	<link rel="stylesheet" href="leaflet/leaflet.marker.slideto.master.css" />
+	<script src="leaflet/Leaflet.Marker.SlideTo.js"></script>
+
+	<!--kode easybutton-->
+	<link rel="stylesheet" href="leaflet/easy-button.css"/>
+	<script src="leaflet/easy-button.js"></script>
+
+	<!--kode search-->
+	<link rel="stylesheet" href="leaflet/geo.scss"/>
+	<script src="leaflet/index.js"></script>
+    </head>
+   <body>
+<!-- peta akan ditampilkan disini -->
+         <div style="height:100%; width:100%" id="mapid"></div>
+		 <button id="sdm">Sidomulyo</button>
+		 <button id="bkh">Bakauheni</button>
+		 <button id="ktb">Katibung</button>
+		 <button id="kln">Kalianda</button>
+		 <button id="ntr">Natar</button>
+		 <button id="WS">Way Sulan</button>
+		 <button id="ktp">Ketapang</button>
+		 <button id="ts">Tanjungsari</button>
+		 <button id="ja">Jati Agung</button>
+		 <button id="pngh">Penengahan</button>
+		 <button id="rb">Rajabasa</button>
+		 <button id="sr">Sragi</button>
+		 <button id="pls">Palas</button>
+		 <button id="mm">Merbau Mataram</button>
+		 <button id="cp">Candipuro</button>
+		 <button id="wp">Way Panji</button>
+		</body>
+
+	<!--tombol untuk berpindah lokasi-->
+		
+	
+	<script src="lampungselatan.js"></script>
+	<script src="leaflet-svg-shape-markers.min.js"></script>
+	<script src="leaflet.rotatedMarker.js"></script>
+	<script src="leaflet.pattern.js"></script>
+	<script src="Autolinker.min.js"></script>
+	<script src="labelgun.min.js"></script>
+    <script src="labels.js"></script>
+	<script src="pendidikan.js"></script>
+	<script src="leaflet/leaflet-search.js"></script>
+
+	 
+	<script>
+	var mymap = L.map('mapid').setView([-5.71616, 105.58495], 13);
+	
+	var GoogleMaps = new L.TileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { 
+     opacity: 1.0, attribution: 'Kelompok D8'
+	}).addTo(mymap);
+	var GoogleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { 
+     maxZoom: 22, 
+     attribution: 'Kelompok D8' 
+	});
+
+	var baseLayers = {
+     'Google Satellite Hybrid': GoogleSatelliteHybrid,
+     'Google Maps': GoogleMaps,
+	}; 
+
+	L.control.groupedLayers(baseLayers).addTo(mymap);
+	var polygon = L.geoJson(polygons.features).addTo(mymap);
+	
+	var marker = L.marker([-5.71623, 105.58513]).addTo(mymap);
+	
+	L.control.scale( { 
+		position:'topright', 
+		maxWidth:300, 
+		imperial:false, 
+	}  ).addTo(mymap);
+	
+	L.control.mousePosition().addTo(mymap);
+	
+	var north = L.control({position: "bottomleft"});
+	north.onAdd = function(mymap) {
+    var div = L.DomUtil.create("div", "info legend");
+    div.innerHTML = '<img src="Resmi_Logo_UMS_Color.png" alt="Universitas Muhammadiyah Surakarta" style="height:70px;width:85px">';
+    return div;
+	}
+	north.addTo(mymap);
+	
+	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib='Map data &copy; OpenStreetMap contributors';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18, attribution: osmAttrib});
+
+	mymap.addLayer(osm);
+	mymap.setView(new L.LatLng(-5.71616, 105.58495),13);
+		
+	//Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+	var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: osmAttrib });
+	var miniMap = new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(mymap);
+
+	mymap.addControl( new L.Control.Compass({
+		position:'topleft',
+		autoActive: true,
+		showdigit: true,
+        setAngle: 30
+	}) );
+	//Plugin magic goes here! Note that you cannot use the same layer object again, as that
+	mymap.addControl(new L.Control.LinearMeasurement({
+        unitSystem: 'imperial:false',
+		position:'topright',
+        color: '#5a32a8',
+        type: 'line'
+    }));
+	L.easyButton('<img src="back.png" style= "height:30;width:30;left:0">', function(btn, mymap){
+    var kantorbupati = [-5.71623, 105.58513];
+    mymap.setView(kantorbupati);
+	}).addTo(mymap);
+	var marker = L.marker([-5.71623, 105.58513]).addTo(mymap);
+	mymap.addControl(L.control.search({ position: 'topright' }));
+
+	var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+	var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        function pop_clip_0(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAMOBJ'] !== null ? autolinker.link(feature.properties['NAMOBJ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">REMARK</th>\
+                        <td>' + (feature.properties['REMARK'] !== null ? autolinker.link(feature.properties['REMARK'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_clip_0_0(feature) {
+            switch(String(feature.properties['REMARK'])) {
+                case 'Laboratorium Pendidikan/Penelitian':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(80,136,219,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan Keagamaan':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(223,101,57,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan Khusus':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(107,232,224,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan Menengah Pertama':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(202,108,207,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan Menengah Umum':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(107,62,222,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan Tinggi':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(228,220,105,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pendidikan/Penelitian Lainnya':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,218,133,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Perpustakaan':
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(128,217,69,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_clip_0',
+                shape: 'diamond',
+                radius: 8.8,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(213,128,160,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        mymap.createPane('pane_clip_0');
+       mymap.getPane('pane_clip_0').style.zIndex = 400;
+        mymap.getPane('pane_clip_0').style['mix-blend-mode'] = 'normal';
+        var layer_clip_0 = new L.geoJson(json_clip_0, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_clip_0',
+            layerName: 'layer_clip_0',
+            pane: 'pane_clip_0',
+            onEachFeature: pop_clip_0,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_clip_0_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_clip_0);
+        mymap.addLayer(layer_clip_0);
+
+	var ktb = [-5.533, 105.44536],
+		kln = [-5.72495, 105.5921],
+		bkh = [-5.8012, 105.7187],
+		sdm = [-5.58501, 105.52069],
+		ntr = [-5.24606, 105.253258],
+		WS = [-5.46996, 105.5453],
+		ktp = [-5.73362, 105.7725],
+		ts = [-5.3593, 105.4722],
+		ja = [-5.31931, 105.34669],
+		pngh = [-5.74824, 105.68524],
+		rb = [-5.80449, 105.59643],
+		sr = [-5.63259, 105.75035],
+		pls = [-5.64978, 105.67912],
+		mm = [-5.45057, 105.38147],
+		cp = [-5.53718, 105.5951],
+		wp = [-5.61814, 105.5901];
+
+	
+	document.getElementById('sdm').onclick   = function () { marker.slideTo(sdm,    {duration:3500, keepAtCenter: true}); };
+	document.getElementById('bkh').onclick   = function () { marker.slideTo(bkh,    {duration:3500, keepAtCenter:true}); };
+	document.getElementById('kln').onclick  = function () { marker.slideTo(kln,   {duration:3500, keepAtCenter:true}); };
+	document.getElementById('ktb').onclick  = function () { marker.slideTo(ktb,   {duration:3500, keepAtCenter:true}); };
+	document.getElementById('ntr').onclick = function () { marker.slideTo(ntr,  {duration:3500, keepAtCenter: true}); };
+	document.getElementById('WS').onclick  = function () { marker.slideTo(WS,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('ktp').onclick  = function () { marker.slideTo(ktp,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('ts').onclick  = function () { marker.slideTo(ts,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('ja').onclick  = function () { marker.slideTo(ja,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('pngh').onclick  = function () { marker.slideTo(pngh,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('rb').onclick  = function () { marker.slideTo(rb,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('sr').onclick  = function () { marker.slideTo(sr,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('pls').onclick  = function () { marker.slideTo(pls,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('mm').onclick  = function () { marker.slideTo(mm,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('cp').onclick  = function () { marker.slideTo(cp,   {duration:3500, keepAtCenter: true}); };
+	document.getElementById('wp').onclick  = function () { marker.slideTo(wp,   {duration:3500, keepAtCenter: true}); };
+	</script>
+
+</html>
+
